@@ -1,15 +1,11 @@
-#hslider{
+.hslider{
     list-style:none;
     padding:0px !important;
 }
 
-#hslider li{
+.hslider li{
     position:absolute;
     list-style:none;
-}
-
-#hslider li img{
-    width:248px;
 }
 
 .hslider-control-nav {

@@ -5,12 +5,18 @@
 (function ($) {
     hslider = function(el, opt){
         var slider = {};
+
         slider.log = function(msg){
-            if (this.DEBUG && typeof(msg) !== 'string') {
-                console.dir(msg);
+            if ( ! this.opt.debug) {
+                return false;
             }
-            console.log(msg);
+            if (typeof(msg) !== 'string') {
+                console.dir(msg);
+            } else {
+                console.log(msg);
+            }
         }
+
         slider.resize = function(){
             if (this.opt.w) {
                 this.container.css({width:this.opt.w});
@@ -20,24 +26,40 @@
             }
             this.container.css('overflow','hidden');
         }
+        slider.addContainer = function(){
+            var id = this.getId();
+            this.preEl.after('<div class="hslider-container hslider-container-'+id+'"><ul class="hslider"></ul></div>');
+            this.container = $('.hslider-container-'+id);
+            this.el = $('.hslider', this.container);
+        }
+        slider.cloneEl = function(){
+            this.addContainer();
+            $('.hslider', this.container).html(this.preEl.html());
+        }
+
+        slider.getId = function(){
+            return parseInt(Math.random()*100000);
+        }
+
         slider.init = function(sl, opt){
-            this.El = $(sl);
+            $(sl).hide();
+            this.preEl = $(sl);
+            this.cloneEl();
             var index = 0;
-            slitem = sl+' li';
-            this.itemEl = $(slitem);
-            this.maxIndex = $(slitem).length - 1;
-            this.container = $('.hslider-container');
+            this.itemEl = $('li', this.el);
+            this.maxIndex = this.itemEl.length - 1;
             this.opt = opt;
             this.resize();
-            $(slitem).each(function(){
+            this.itemEl.each(function(){
                 // $(this).attr('data-index', index++);
                 $(this).hide();
             });
-            $(slitem).eq(0).fadeIn();
+            this.itemEl.eq(0).fadeIn();
             this.nIndex = 0;
             slider.addNav();
             return this;
         }
+
         slider.next = function(){
             var pn = this.getPN();
             $(this.itemEl).eq(pn.p).fadeOut();
@@ -45,6 +67,7 @@
             this.nIndex = pn.n;
             this.log("next");
         }
+
         slider.go = function(index){
             if (index > this.maxIndex || index == this.nIndex) {
                 this.log('skip go');
@@ -55,6 +78,8 @@
             this.activeControl(index);
             this.nIndex = index;
         }
+
+        // last one and first one
         slider.getPN = function(index){
             var pn = {}
                 var index = this.nIndex;
@@ -68,30 +93,34 @@
             this.log({"getPN": pn});
             return pn;
         }
+
+        // add nav
         slider.addNav = function(){
-            this.navEl = $('.hslider-control-nav');
+            this.navEl = $('.hslider-control-nav', this.container);
             if (this.navEl.length) {
-                $('.hslider-control-nav').remove();
+                this.navEl.remove();
             }
-            this.El.after('<ul class="hslider-control-nav"></div>');
+            this.el.after('<ul class="hslider-control-nav"></div>');
             // reload el
-            this.navEl = $('.hslider-control-nav');
+            this.navEl = $('.hslider-control-nav', this.container);
             var control = '';
             for (var i = this.maxIndex; i >= 0; i--) {
                 control += '<li></li>';
             };
             this.navEl.html(control);
-            $('body').on('click', '.hslider-control-nav li', function(){
+            $('body').on('click', $('li', this.navEl).selector, function(){
                 slider.go($(this).index());
             });
             this.activeControl(0);
         }
+
+        // active nav
         slider.activeControl = function(index){
             $('li', this.navEl).removeClass('active');
-            console.log($('li', this.navEl));
-            console.log($('li', this.navEl.eq(index)));
             $('li', this.navEl).eq(index).addClass('active');
         }
+
+        // add new slider item
         slider.addItem = function(index, Itemhtml){
             if (index == -1) {
                 index = this.maxIndex;
@@ -101,12 +130,13 @@
                 this.itemEl.eq(index).after('<li>'+Itemhtml+'</li>');
                 this.nIndex = index + 1;
             }else{
-                this.El.html('<li>'+Itemhtml+'</li>');
+                this.el.html('<li>'+Itemhtml+'</li>');
                 this.nIndex = index;
             }
             this.reInit();
             this.activeControl(this.nIndex);
         }
+
         slider.removeItem = function(index){
             if (index == this.nIndex) {
                 this.go(index - 1);
@@ -114,22 +144,26 @@
             this.itemEl.eq(index).remove();
             this.reInit();
         }
+
         slider.removeAll = function(index){
             this.itemEl.remove();
             this.reInit();
         }
+
         slider.reInit  = function(){
-            this.itemEl = $('li', this.El);
+            this.itemEl = $('li', this.el);
             this.maxIndex = this.itemEl.length - 1;
             this.addNav();
             this.log('re inital');
         }
+
         slider.getElByIndex = function(index){
             if (index == undefined) {
                 return this.itemEl.eq(this.nIndex);
             }
             return this.itemEl.eq(index);
         }
+
         slider.init(el, opt);
         return slider;
     }
