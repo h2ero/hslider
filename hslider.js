@@ -20,21 +20,39 @@
         slider.resize = function(){
             if (this.opt.w) {
                 this.container.css({width:this.opt.w});
+                this.itemEl.css({width:this.opt.w});
             }
             if (this.opt.h) {
                 this.container.css({height:this.opt.h});
+                this.itemEl.css({height:this.opt.h});
             }
             this.container.css('overflow','hidden');
+            this.itemEl.css('overflow','hidden');
+        }
+        slider.initMode = function(){
+            if (this.opt.mode == 'fade' || this.opt.mode == undefined) {
+                this.itemEl.each(function(){
+                    // $(this).attr('data-index', index++);
+                    $(this).hide();
+                });
+                this.itemEl.eq(0).fadeIn();
+            } else if(this.opt.mode == 'slider'){
+                this.itemEl.each(function(index){
+                    if (index != 0) {
+                        $(this).css({'left':slider.opt.w});
+                    }
+                });
+            }
         }
         slider.addContainer = function(){
             var id = this.getId();
             this.preEl.after('<div class="hslider-container hslider-container-'+id+'"><ul class="hslider"></ul></div>');
             this.container = $('.hslider-container-'+id);
-            this.el = $('.hslider', this.container);
         }
         slider.cloneEl = function(){
             this.addContainer();
-            $('.hslider', this.container).html(this.preEl.html());
+            this.el = $('.hslider', this.container);
+            this.el.html(this.preEl.html());
         }
 
         slider.getId = function(){
@@ -50,11 +68,7 @@
             this.maxIndex = this.itemEl.length - 1;
             this.opt = opt;
             this.resize();
-            this.itemEl.each(function(){
-                // $(this).attr('data-index', index++);
-                $(this).hide();
-            });
-            this.itemEl.eq(0).fadeIn();
+            this.initMode();
             this.nIndex = 0;
             slider.addNav();
             return this;
@@ -73,8 +87,15 @@
                 this.log('skip go');
                 return false;
             }
-            $(this.itemEl).eq(this.nIndex).fadeOut();
-            $(this.itemEl).eq(index).fadeIn('slow');
+            if (this.opt.mode == 'fade' || this.opt.mode == undefined) {
+                $(this.itemEl).eq(this.nIndex).fadeOut();
+                $(this.itemEl).eq(index).fadeIn('slow');
+            } else if(this.opt.mode == 'slider'){
+                $(this.itemEl).eq(this.nIndex).show().animate({'left':-this.opt.w},'slow', function(){
+                    $(this).css({'left':slider.opt.w});
+                });
+                $(this.itemEl).eq(index).show().animate({'left':0}, 'slow');
+            }
             this.activeControl(index);
             this.nIndex = index;
         }
