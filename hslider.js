@@ -74,6 +74,9 @@
         }
 
         slider.swipe = function(){
+            if (this.device != 'mobile') {
+                return false;
+            }
             var direction = 'left';
             var startX = null;
             this.itemEl.on('touchstart', function(e){
@@ -96,7 +99,7 @@
                 slider.direction = direction;
             });
             this.itemEl.on('touchend touchcancel', function(e){
-                slider.go($(this).index());
+                // slider.go($(this).index());
             });
         }
 
