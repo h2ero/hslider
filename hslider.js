@@ -16,6 +16,12 @@
                 console.log(msg);
             }
         }
+        slider.detectDeive = function() {
+            this.device = 'pc';
+            if(/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase())){
+                this.device = 'mobile';
+            }
+        }
 
         slider.resize = function(){
             if (this.opt.w) {
@@ -36,10 +42,18 @@
                     $(this).hide();
                 });
                 this.itemEl.eq(0).fadeIn();
-            } else if(this.opt.mode == 'slider'){
+            } else if(this.opt.mode == 'slider' && this.device != 'mobile'){
                 this.itemEl.each(function(index){
                     if (index != 0) {
                         $(this).css({'left':slider.opt.w});
+                    }
+                });
+            } else if(this.opt.mode == 'slider'){
+                this.itemEl.each(function(index){
+                    if (index != 0) {
+                        // $(this).css({'left':-slider.opt.w});
+                    } else {
+                        // $(this).css({'left':0});
                     }
                 });
             }
@@ -59,7 +73,35 @@
             return parseInt(Math.random()*100000);
         }
 
+        slider.swipe = function(){
+            var direction = 'left';
+            var startX = null;
+            this.itemEl.on('touchstart', function(e){
+                var p = e.originalEvent.targetTouches ? e.originalEvent.targetTouches[0] : e;
+                startX = p.pageX;
+            });
+            this.itemEl.on('touchmove', function(e){
+                var p = e.originalEvent.targetTouches ? e.originalEvent.targetTouches[0] : e;
+                x = p.pageX;
+                right = parseInt($(this).css('right'));
+                if(startX - x < 0){
+                    direction = 'right';
+                    $(this).css({left:-(startX-x)});
+                    $(this).prev().css({left:-(slider.opt.w+(startX-x))});
+                } else {
+                    direction = 'left';
+                    $(this).css({left:(x-startX)});
+                    $(this).next().css({left:slider.opt.w+(x-startX)});
+                }
+                slider.direction = direction;
+            });
+            this.itemEl.on('touchend touchcancel', function(e){
+                slider.go($(this).index());
+            });
+        }
+
         slider.init = function(sl, opt){
+            this.detectDeive();
             $(sl).hide();
             this.preEl = $(sl);
             this.cloneEl();
@@ -70,6 +112,7 @@
             this.resize();
             this.initMode();
             this.nIndex = 0;
+            this.swipe();
             slider.addNav();
             return this;
         }
@@ -83,18 +126,31 @@
         }
 
         slider.go = function(index){
-            if (index > this.maxIndex || index == this.nIndex) {
+            if(index > this.maxIndex){
+                index = 0;
+            }
+            if (index == this.nIndex) {
                 this.log('skip go');
                 return false;
             }
             if (this.opt.mode == 'fade' || this.opt.mode == undefined) {
                 $(this.itemEl).eq(this.nIndex).fadeOut();
                 $(this.itemEl).eq(index).fadeIn('slow');
-            } else if(this.opt.mode == 'slider'){
+            } else if(this.opt.mode == 'slider' && this.device != 'mobile'){
                 $(this.itemEl).eq(this.nIndex).show().animate({'left':-this.opt.w},'slow', function(){
                     $(this).css({'left':slider.opt.w});
                 });
                 $(this.itemEl).eq(index).show().animate({'left':0}, 'slow');
+            }else if(this.opt.mode == 'slider'){
+                if (slider.direction == 'left') {
+                    index++;
+                    $(this.itemEl).eq(this.nIndex).show().animate({'left':-this.opt.w},'slow', function(){
+                        $(this).css({'left':slider.opt.w});
+                    });
+                    $(this.itemEl).eq(index).show().animate({'left':0}, 'slow');
+                } else {
+                    index--;
+                }
             }
             this.activeControl(index);
             this.nIndex = index;
@@ -129,7 +185,7 @@
                 control += '<li></li>';
             };
             this.navEl.html(control);
-            $('body').on('click', $('li', this.navEl).selector, function(){
+            $('body').on('click touchend touchcancel', $('li', this.navEl).selector, function(){
                 slider.go($(this).index());
             });
             this.activeControl(0);

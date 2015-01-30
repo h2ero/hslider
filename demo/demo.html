@@ -9,17 +9,24 @@
     <script>
         var slider;
         $(function(){
-            slider = $('#hslider').hslider({
+            slider1 = $('#hslider-demo-1').hslider({
                 w: 248,
-                h: 166
+                h: 166,
+                debug:true
             });
+            slider2 = $('#hslider-demo-2').hslider({
+                w: 280,
+                h: 166,
+                mode:'slider',
+            });
+
         });
     </script>
 </head>
 <body>
     
-<div class="hslider-container">
-    <ul id="hslider">
+<!-- <div class="hslider&#45;container"> -->
+    <ul id="hslider-demo-1">
         <li>
             <img src="https://ppcdn.500px.org/97228165/d46b7ff312911ab8902ad7598fd3c3da28f572de/3.jpg?v=8" alt="" data-id="1">
             </li>
@@ -31,7 +38,20 @@
 
             </li>
     </ul>
-</div>
+    <ul id="hslider-demo-2">
+        <li>
+            <img src="https://ppcdn.500px.org/97228165/d46b7ff312911ab8902ad7598fd3c3da28f572de/3.jpg?v=8" alt="" data-id="1">
+            </li>
+            <li>
+            <img src="https://ppcdn.500px.org/97248823/fe45e1a515b4b3b3e6e13023e7d9907f64c54880/3.jpg?v=8" alt="" data-id="1">
+            </li>
+            <li>
+            <img src="https://ppcdn.500px.org/97231955/d50bc270560312c80ce1e0596e2ee012c2527732/3.jpg?v=10" alt="" data-id="1">
+
+            </li>
+    </ul>
+
+<!-- </div> -->
 
 </body>
 </html>
