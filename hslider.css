@@ -1,0 +1,42 @@
+#hslider{
+    list-style:none;
+    padding:0px !important;
+}
+
+#hslider li{
+    position:absolute;
+    list-style:none;
+}
+
+#hslider li img{
+    width:248px;
+}
+
+.hslider-control-nav {
+    bottom: 0px;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    padding:0px;
+}
+
+.hslider-control-nav li {
+    display: inline-block;
+    margin: 0 6px;
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3) inset;
+    cursor: pointer;
+    display: inline-block;
+    height: 11px;
+    text-indent: -9999px;
+    width: 11px;
+}
+
+.hslider-control-nav li.active{
+    background: none repeat scroll 0 0 rgba(255, 255, 255, 0.5);
+}
+
+.hslider-container{
+    position: relative;
+}
