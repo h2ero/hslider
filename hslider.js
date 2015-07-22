@@ -76,10 +76,7 @@
 
         slider.next = function(){
             var pn = this.getPN();
-            $(this.itemEl).eq(pn.p).fadeOut();
-            $(this.itemEl).eq(pn.n).fadeIn('slow');
-            this.nIndex = pn.n;
-            this.log("next");
+            this.go(pn.n);
         }
 
         slider.go = function(index){
