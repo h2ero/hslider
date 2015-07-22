@@ -21,6 +21,7 @@
             if (this.opt.w) {
                 this.container.css({width:this.opt.w});
                 this.itemEl.css({width:this.opt.w});
+                $('img', this.itemEl).css({width:this.opt.w});
             }
             if (this.opt.h) {
                 this.container.css({height:this.opt.h});
